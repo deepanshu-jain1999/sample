@@ -38,6 +38,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    @detail_route(methods=['post'])
+    def set_password(self, request, pk=None):
+        return Response({"message": "Hello, world!"})
+
 
 class SnippetViewSet(viewsets.ModelViewSet):
     """
@@ -54,7 +58,23 @@ class SnippetViewSet(viewsets.ModelViewSet):
     @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         snippet = self.get_object()
-        return Response(snippet.highlighted)
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class UserDetail(generics.RetrieveAPIView):
+    """
+    A view that returns a templated HTML representation of a given user.
+    """
+    queryset = User.objects.all()
+    renderer_classes = (TemplateHTMLRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return Response({'user': self.object}, template_name='rest_framework/user_detail.html')

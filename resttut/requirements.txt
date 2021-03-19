@@ -1,4 +1,4 @@
 django==2.0.1
-djangorestframework==3.7.7
+djangorestframework==3.11.2
 pygments==2.2.0
 httpie==0.9.9
